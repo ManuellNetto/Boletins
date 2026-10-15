@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Executivo</title>
+
+  <!-- Bibliotecas JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="Logo_Branco.png" alt="Logo" onerror="this.style.display='none'">
+      <div>
+        <h1>Boletins 2025</h1>
+        <p class="sub" id="updateInfo">Carregando dados...</p>
+      </div>
+    </div>
+    <button id="btnReload" class="btn-reload">↻ Recarregar</button>
+  </header>
+
+  <!-- SEÇÃO 1 — BOLETINS -->
+  <section class="section">
+    <h2 class="section-title">📊 Boletins Anuais</h2>
+    <div id="boletimStatus"></div>
+
+    <div class="filters">
+      <select id="bFilterMes">
+        <option value="">Todos os meses</option>
+      </select>
+    </div>
+
+    <div class="cards" id="boletimCards"></div>
+
+    <div class="chart-box">
+      <h3>Recebido vs Meta Mensal + Projeção para fechar o Gap</h3>
+      <div class="chart-wrap"><canvas id="chartBoletim"></canvas></div>
+    </div>
+  </section>
+
+    <!-- SEÇÃO 2 — CUSTEIO -->
+  <section class="section">
+    <h2 class="section-title">💰 Custeio 2026</h2>
+    <div id="custeioStatus"></div>
+
+    <div class="filters">
+      <select id="cFilterSetor">
+        <option value="">Todos os setores</option>
+      </select>
+      <select id="cFilterMes">
+        <option value="">Todos os meses</option>
+      </select>
+    </div>
+
+    <div class="cards" id="custeioCards"></div>
+
+    <div class="chart-box">
+      <h3>Validado vs Pago por Mês</h3>
+      <div class="chart-wrap"><canvas id="chartCusteio"></canvas></div>
+    </div>
+
+    <!-- GRID 2x2 -->
+    <div class="grid-2">
+
+    <!-- Gráfico de % -->
+<div class="pct-box pct-box--card">
+  <div class="pct-ring">
+
+  
+    <svg viewBox="0 0 160 160" width="100%" height="100%">
+
+    <!-- Círculo de fundo -->
+    <circle cx="80" cy="80" r="70" stroke="#2a3554" stroke-width="10" fill="none"/>
+      
+
+    <circle id="pctRing" cx="80" cy="80" r="70" stroke="#22c55e" stroke-width="10"
+              fill="none" stroke-dasharray="439.82" stroke-dashoffset="439.82"
+              stroke-linecap="round" transform="rotate(-90 80 80)"/>
+    </svg>
+    <div class="val" id="pctVal">0%</div>
+  </div>
+  <div class="pct-info">
+    <h4>Percentual do Apontado que foi Pago</h4>
+    <p id="pctDetail">—</p>
+  </div>
+</div>
+
+
+      <!-- Pago por Setor -->
+      <div class="chart-box">
+        <h3>Pago por Setor (participação %)</h3>
+        <div class="table-wrap"><table id="tblPago"></table></div>
+      </div>
+
+      <!-- Não Pago por Setor -->
+      <div class="chart-box">
+        <h3>Não Pago por Setor (participação %)</h3>
+        <div class="table-wrap"><table id="tblNaoPago"></table></div>
+      </div>
+
+      <!-- Ordens Extras por Setor -->
+      <div class="chart-box">
+        <h3>Ordens Extras por Setor (participação %)</h3>
+        <div class="table-wrap"><table id="tblExtras"></table></div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- JS local -->
+  <script src="utils.js"></script>
+</body>
+</html>

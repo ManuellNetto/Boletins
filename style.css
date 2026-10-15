@@ -1,0 +1,345 @@
+:root{
+  --bg:#0f1420;
+  --card:#1a2233;
+  --card-2:#212c44;
+  --txt:#e8eefc;
+  --muted:#8ea0c4;
+  --accent:#4da3ff;
+  --green:#22c55e;
+  --red:#ef4444;
+  --orange:#f59e0b;
+  --purple:#a855f7;
+  --border:#2a3554;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Roboto,Arial,sans-serif}
+
+body{
+  background:var(--bg);
+  color:var(--txt);
+  padding:24px;
+  min-height:100vh;
+}
+
+/* TOPBAR */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:linear-gradient(90deg,#111a2c,#1c2942);
+  padding:16px 24px;
+  border-radius:14px;
+  margin-bottom:24px;
+  border:1px solid var(--border);
+  flex-wrap:wrap;
+  gap:12px;
+}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.topbar img{height:44px;object-fit:contain}
+.topbar h1{font-size:20px;font-weight:600;letter-spacing:.5px}
+.topbar .sub{color:var(--muted);font-size:12px}
+
+.btn-reload{
+  background:var(--accent);
+  border:none;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+  transition:opacity .2s;
+}
+.btn-reload:hover{opacity:.85}
+
+/* SEÇÕES */
+.section{margin-bottom:48px}
+
+.section-title{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:16px;
+  padding-left:12px;
+  border-left:4px solid var(--accent);
+}
+
+/* FILTROS */
+.filters{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+.filters select{
+  background:var(--card);
+  color:var(--txt);
+  border:1px solid var(--border);
+  padding:9px 12px;
+  border-radius:8px;
+  font-size:13px;
+  outline:none;
+  transition:.2s;
+}
+.filters select:hover,
+.filters select:focus{border-color:var(--accent)}
+
+/* CARDS */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px;
+  margin-bottom:22px;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px;
+  position:relative;
+  overflow:hidden;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 8px 20px rgba(0,0,0,.35);
+}
+.card .label{
+  color:var(--muted);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  margin-bottom:8px;
+}
+.card .value{font-size:22px;font-weight:700}
+.card .sub{font-size:12px;color:var(--muted);margin-top:6px}
+
+.card::before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:4px;
+  background:var(--accent);
+}
+.card.green::before{background:var(--green)}
+.card.red::before{background:var(--red)}
+.card.orange::before{background:var(--orange)}
+.card.purple::before{background:var(--purple)}
+
+/* GRÁFICOS */
+.chart-box{
+  background:var(--card-2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:20px;
+}
+.chart-box h3{
+  font-size:14px;
+  margin-bottom:12px;
+  color:var(--muted);
+  font-weight:500;
+}
+.chart-wrap{position:relative;height:340px}
+
+.grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+/* TABELAS */
+.table-wrap{
+  overflow-x:auto;
+  border-radius:12px;
+  border:1px solid var(--border);
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+  background:var(--card-2);
+}
+th,td{
+  padding:11px 14px;
+  text-align:left;
+  border-bottom:1px solid var(--border);
+}
+th{
+  background:#182238;
+  color:var(--muted);
+  font-weight:600;
+  text-transform:uppercase;
+  font-size:11px;
+  letter-spacing:.5px;
+}
+tr:hover td{background:#1c2740}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.bar-inline{
+  display:inline-block;
+  height:6px;
+  border-radius:3px;
+  background:var(--accent);
+  vertical-align:middle;
+  margin-right:8px;
+}
+
+/* Grafico DE % */
+.pct-box{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+.pct-ring{position:relative;width:110px;height:110px;flex-shrink:0}
+.pct-ring svg{transform:rotate(-90deg)}
+.pct-ring .val{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:700;
+}
+.pct-info h4{font-size:14px;color:var(--muted);font-weight:500;margin-bottom:6px}
+.pct-info p{font-size:13px;color:var(--muted)}
+
+/* MENSAGENS */
+.status-msg{
+  padding:10px 14px;
+  border-radius:8px;
+  font-size:13px;
+  margin-bottom:14px;
+  background:#3b1d1d;
+  border:1px solid #7f1d1d;
+  color:#fca5a5;
+}
+.status-ok{
+  background:#132b1c;
+  border-color:#166534;
+  color:#86efac;
+}
+
+/* RESPONSIVO */
+@media(max-width:900px){
+  body{padding:14px}
+  .grid-2{grid-template-columns:1fr}
+  .chart-wrap{height:280px}
+}
+
+/* Todos os 4 cards do grid com mesma altura */
+.grid-2 > .chart-box,
+.grid-2 > .pct-box--card{
+  height: 100%;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* % como card */
+.pct-box--card{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;   
+  text-align: center;
+  padding: 32px 24px;
+  gap: 16px;
+  height: 100%;
+}
+
+/* ocupa todo o espaço disponível, respeitando limite máximo */
+.pct-box--card .pct-ring{
+  flex: 1 1 auto;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0; 
+}
+
+.pct-box--card .pct-ring svg{
+  width: 100%;
+  height: 100%;
+  max-width: 240px;
+  max-height: 240px;
+  display: block;
+}
+
+/* O número dentro da % escala junto */
+.pct-box--card .pct-ring .val{
+  font-size: clamp(24px, 3.5vw, 40px);
+  font-weight: 700;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Texto informativo ocupa a base */
+.pct-box--card .pct-info{
+  width: 100%;
+}
+
+.pct-box--card .pct-info h4{
+  font-size: 15px;
+  color: var(--txt);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.pct-box--card .pct-info p{
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Tabelas: mesmo alinhamento em todas */
+.grid-2 .table-wrap{
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Cabeçalho: Setor à esquerda, Valor e Part. à direita */
+.grid-2 table th:nth-child(1),
+.grid-2 table td:nth-child(1){
+  text-align: left;
+}
+.grid-2 table th:nth-child(2),
+.grid-2 table td:nth-child(2),
+.grid-2 table th:nth-child(3),
+.grid-2 table td:nth-child(3){
+  text-align: right;
+}
+
+/* Coluna de participação: barra + número alinhados */
+.grid-2 table td.num{
+  text-align: right;
+}
+
+/* Total (tfoot) fixo no rodapé do card, sempre visível */
+.grid-2 table tfoot tr td{
+  background:#182238;
+  font-weight:700;
+  border-top: 2px solid var(--border);
+  position: sticky;
+  bottom: 0;
+}
+
+/* Scrollbar discreta */
+.grid-2 .table-wrap::-webkit-scrollbar{ width: 6px; }
+.grid-2 .table-wrap::-webkit-scrollbar-thumb{
+  background: #2a3554;
+  border-radius: 3px;
+}
+.grid-2 .table-wrap::-webkit-scrollbar-track{ background: transparent; }
