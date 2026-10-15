@@ -1,9 +1,17 @@
-/* 1. CONFIGURAÇÃO — NOMES DOS ARQUIVOS */
 const ARQUIVO_BOLETIM = 'Boletim.xlsx';
 const ARQUIVO_CUSTEIO = 'CUSTEIO_2026.xlsx';
 
 
-/* 2. UTILITÁRIOS */
+/* 2. REGISTRO GLOBAL DO PLUGIN DE RÓTULOS (DATALABELS) */
+if(typeof ChartDataLabels !== 'undefined'){
+  Chart.register(ChartDataLabels);
+  console.log('✅ chartjs-plugin-datalabels registrado.');
+} else {
+  console.warn('⚠ chartjs-plugin-datalabels NÃO foi carregado. Verifique o CDN no index.html.');
+}
+
+
+/* 3. UTILITÁRIOS */
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
                'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MESES_ABREV = ['Jan','Fev','Mar','Abr','Mai','Jun',
@@ -13,6 +21,14 @@ const fmtBRL = v => (v || 0).toLocaleString('pt-BR',
   { style:'currency', currency:'BRL', maximumFractionDigits:0 });
 const fmtNum = v => (v || 0).toLocaleString('pt-BR');
 const fmtPct = v => (v || 0).toFixed(1) + '%';
+
+const fmtBRLcompact = v => {
+  if(v === null || v === undefined || v === '') return '';
+  const abs = Math.abs(v);
+  if(abs >= 1_000_000) return 'R$ ' + (v/1_000_000).toFixed(1).replace('.',',') + 'M';
+  if(abs >= 1_000)     return 'R$ ' + (v/1_000).toFixed(1).replace('.',',') + 'k';
+  return 'R$ ' + v.toFixed(0);
+};
 
 function toNumber(v){
   if(v === null || v === undefined || v === '') return 0;
@@ -58,11 +74,13 @@ function acharColuna(headers, ...candidatos){
   return null;
 }
 
+/* Opções base dos gráficos — COM datalabels global ativo */
 function chartBaseOptions(){
   return {
     responsive:true,
     maintainAspectRatio:false,
     interaction:{ mode:'index', intersect:false },
+    layout:{ padding:{ top: 26 } },
     plugins:{
       legend:{
         labels:{ color:'#e8eefc', font:{ size:12 }, boxWidth:14, boxHeight:10 }
@@ -76,6 +94,19 @@ function chartBaseOptions(){
         callbacks:{
           label: ctx => `${ctx.dataset.label}: ${fmtBRL(ctx.parsed.y)}`
         }
+      },
+      /* datalabels global — vale para TODOS os datasets,
+         cada dataset pode sobrescrever cor/display */
+      datalabels:{
+        color:'#e8eefc',
+        anchor:'end',
+        align:'top',
+        offset:2,
+        clamp:true,
+        font:{ size:10, weight:'600' },
+        formatter: v => (v === null || v === undefined || v === 0)
+                        ? ''
+                        : fmtBRLcompact(v)
       }
     },
     scales:{
@@ -93,15 +124,11 @@ function mostrarErro(elId, msg){
   if(!el) return;
   el.innerHTML = `
     <div class="status-msg">⚠ ${msg}</div>
-    <div class="status-msg status-ok">
-      ℹ️ Confirme que <code>${ARQUIVO_BOLETIM}</code> e <code>${ARQUIVO_CUSTEIO}</code>
-      estão na mesma pasta do <code>index.html</code>, com os nomes exatos
-      (maiúsculas/minúsculas importam no GitHub Pages).
-    </div>`;
+    <div class="status-msg status-ok"></div>`;
 }
 
 
-/* 3. CARREGAMENTO DE EXCEL */
+/* 4. CARREGAMENTO DE EXCEL */
 async function carregarExcel(url){
   console.log('[loader] Buscando:', url);
   const resp = await fetch(url, { cache:'no-cache' });
@@ -119,7 +146,7 @@ async function carregarExcel(url){
 }
 
 
-/* 4. SEÇÃO BOLETINS */
+/* 5. SEÇÃO BOLETINS */
 const stateBoletim = {
   dados: [],
   chartBarras: null
@@ -175,18 +202,15 @@ function renderBoletim(){
   let dados = stateBoletim.dados;
   if(filtro !== '') dados = dados.filter(d => d.mesIdx === parseInt(filtro));
 
-  // --- totais reais (ignorando linhas TOTAL/GAP, que já foram filtradas no init)
   const totalRecebido = stateBoletim.dados.reduce((s,x) => s + x.recebido, 0);
   const metaMensal    = stateBoletim.dados.length ? stateBoletim.dados[0].meta : 0;
   const metaAnual     = metaMensal * 12;
 
-  // --- último mês que REALMENTE tem valor recebido 
   const mesesComRecebido = stateBoletim.dados.filter(d => d.recebido > 0);
   const ultimoMesIdx = mesesComRecebido.length
     ? mesesComRecebido[mesesComRecebido.length - 1].mesIdx
     : -1;
 
-  // meses que faltam 
   const mesesRestantes = Math.max(0, 11 - ultimoMesIdx);
   const gap            = Math.max(0, metaAnual - totalRecebido);
   const gapPorMes      = mesesRestantes > 0 ? gap / mesesRestantes : 0;
@@ -215,13 +239,10 @@ function renderBoletim(){
       <div class="sub">${mesesRestantes} meses restantes</div>
     </div>`;
 
-
-  // Gráfico único: Recebido + Meta + Projeção 
   const labels    = dados.map(d => d.mes);
   const recebidos = dados.map(d => d.recebido);
   const metas     = dados.map(d => d.meta);
 
-  // Barra laranja = necessário por mês restante (só nos meses sem recebimento)
   const necessarioMes = mesesRestantes > 0 ? gap / mesesRestantes : 0;
   const projetado = dados.map(d =>
     (d.recebido === 0 && d.mesIdx > ultimoMesIdx) ? necessarioMes : null
@@ -231,41 +252,42 @@ function renderBoletim(){
   stateBoletim.chartBarras = new Chart(
     document.getElementById('chartBoletim'),
     {
-           data:{
+      data:{
         labels,
         datasets:[
-          { type:'bar', label:'Recebido', data:recebidos,
+          {
+            type:'bar', label:'Recebido', data:recebidos,
             backgroundColor:'rgba(77,163,255,.75)',
             borderRadius:6, maxBarThickness:46,
-            grouped: false,
-            barPercentage: 0.7,
-            categoryPercentage: 0.8,
-            order: 3 },
-
-          { type:'bar', label:'Necessário p/ fechar gap',
+            grouped: false, barPercentage: 0.7, categoryPercentage: 0.8,
+            order: 3,
+            datalabels:{ color:'#4da3ff' }   /* só sobrescreve a cor */
+          },
+          {
+            type:'bar', label:'Necessário p/ fechar gap',
             data:projetado,
-            backgroundColor:'rgba(245,158,11,.85)',
+            backgroundColor:'rgba(129, 65, 182, 0.85)',
             borderRadius:6, maxBarThickness:46,
-            grouped: false,
-            barPercentage: 0.7,
-            categoryPercentage: 0.8,
-            order: 2 },
-
-          { type:'line', label:'Meta Mensal', data:metas,
+            grouped: false, barPercentage: 0.7, categoryPercentage: 0.8,
+            order: 2,
+            datalabels:{ color:'#a047f3' }
+          },
+          {
+            type:'line', label:'Meta Mensal', data:metas,
             borderColor:'#ef4444', borderWidth:2, tension:.25,
             pointBackgroundColor:'#ef4444', pointRadius:4,
-            order: 1 }
+            order: 1,
+            datalabels:{ display:false }     /* esconde na linha */
+          }
         ]
       },
-  
       options: chartBaseOptions()
     }
   );
 }
 
 
-/* 5. SEÇÃO CUSTEIO */
-
+/* 6. SEÇÃO CUSTEIO */
 const stateCusteio = {
   dados: [],
   chartBarras: null
@@ -398,12 +420,18 @@ function renderCusteio(){
       data:{
         labels,
         datasets:[
-          { label:'Validado', data:valPrev,
+          {
+            label:'Validado', data:valPrev,
             backgroundColor:'rgba(77,163,255,.75)',
-            borderRadius:6, maxBarThickness:36 },
-          { label:'Pago', data:valPago,
+            borderRadius:6, maxBarThickness:36,
+            datalabels:{ color:'#4da3ff' }   /* só cor */
+          },
+          {
+            label:'Pago', data:valPago,
             backgroundColor:'rgba(34,197,94,.8)',
-            borderRadius:6, maxBarThickness:36 }
+            borderRadius:6, maxBarThickness:36,
+            datalabels:{ color:'#22c55e' }   /* só cor */
+          }
         ]
       },
       options: chartBaseOptions()
@@ -465,13 +493,12 @@ function renderCusteio(){
 }
 
 
-/* 6. INICIALIZAÇÃO */
-
+/* 7. INICIALIZAÇÃO */
 async function reloadAll(){
-  if(stateBoletim.chartBarras)    stateBoletim.chartBarras.destroy();
+  if(stateBoletim.chartBarras) stateBoletim.chartBarras.destroy();
   stateBoletim.chartBarras = null;
-  if(stateCusteio.chartBarras)    stateCusteio.chartBarras.destroy();
-  stateBoletim.chartBarras = stateBoletim.chartSimulacao = null;
+
+  if(stateCusteio.chartBarras) stateCusteio.chartBarras.destroy();
   stateCusteio.chartBarras = null;
 
   await Promise.all([ initBoletim(), initCusteio() ]);
