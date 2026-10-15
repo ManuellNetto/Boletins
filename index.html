@@ -8,6 +8,7 @@
   <!-- Bibliotecas JS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
   <!-- CSS -->
   <link rel="stylesheet" href="style.css">
@@ -45,7 +46,7 @@
     </div>
   </section>
 
-    <!-- SEÇÃO 2 — CUSTEIO -->
+  <!-- SEÇÃO 2 — CUSTEIO -->
   <section class="section">
     <h2 class="section-title">💰 Custeio 2026</h2>
     <div id="custeioStatus"></div>
@@ -69,29 +70,22 @@
     <!-- GRID 2x2 -->
     <div class="grid-2">
 
-    <!-- Gráfico de % -->
-<div class="pct-box pct-box--card">
-  <div class="pct-ring">
-
-  
-    <svg viewBox="0 0 160 160" width="100%" height="100%">
-
-    <!-- Círculo de fundo -->
-    <circle cx="80" cy="80" r="70" stroke="#2a3554" stroke-width="10" fill="none"/>
-      
-
-    <circle id="pctRing" cx="80" cy="80" r="70" stroke="#22c55e" stroke-width="10"
-              fill="none" stroke-dasharray="439.82" stroke-dashoffset="439.82"
-              stroke-linecap="round" transform="rotate(-90 80 80)"/>
-    </svg>
-    <div class="val" id="pctVal">0%</div>
-  </div>
-  <div class="pct-info">
-    <h4>Percentual do Apontado que foi Pago</h4>
-    <p id="pctDetail">—</p>
-  </div>
-</div>
-
+      <!-- Gráfico de % -->
+      <div class="pct-box pct-box--card">
+        <div class="pct-ring">
+          <svg viewBox="0 0 160 160" width="100%" height="100%">
+            <circle cx="80" cy="80" r="70" stroke="#2a3554" stroke-width="10" fill="none"/>
+            <circle id="pctRing" cx="80" cy="80" r="70" stroke="#22c55e" stroke-width="10"
+                    fill="none" stroke-dasharray="439.82" stroke-dashoffset="439.82"
+                    stroke-linecap="round" transform="rotate(-90 80 80)"/>
+          </svg>
+          <div class="val" id="pctVal">0%</div>
+        </div>
+        <div class="pct-info">
+          <h4>Percentual do Apontado que foi Pago</h4>
+          <p id="pctDetail">—</p>
+        </div>
+      </div>
 
       <!-- Pago por Setor -->
       <div class="chart-box">
