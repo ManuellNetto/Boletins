@@ -203,8 +203,9 @@ function renderBoletim(){
   if(filtro !== '') dados = dados.filter(d => d.mesIdx === parseInt(filtro));
 
   const totalRecebido = stateBoletim.dados.reduce((s,x) => s + x.recebido, 0);
-  const metaMensal    = stateBoletim.dados.length ? stateBoletim.dados[0].meta : 0;
-  const metaAnual     = metaMensal * 12;
+  const metaAnual     = stateBoletim.dados.reduce((s,x) => s + x.meta,0);
+  const metaMensal    = stateBoletim.dados.length ? (metaAnual / stateBoletim.dados.length) : 0;
+
 
   const mesesComRecebido = stateBoletim.dados.filter(d => d.recebido > 0);
   const ultimoMesIdx = mesesComRecebido.length
